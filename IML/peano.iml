@@ -60,6 +60,7 @@ add (add m n) p = add m (add n p) [@@auto][@@rw];;
 theorem add_assoc' m n p = 
 add n (add m p) = add m (add n p)  [@@auto][@@rw][@@permutative];; 
 
+theorem add_is_succ a = S a = add a (S Z) [@@auto][@@rw];; 
 
 theorem add_succ m n = 
   add (S m) n = S(add m n)[@@auto][@@rw];;
@@ -82,6 +83,9 @@ theorem mul_zero_l m = mul Z m = Z [@@induct m][@@rw];;
 theorem mul_zero_r m = mul m Z = Z [@@auto][@@rw];; 
 
 theorem mul_succ m n = mul (S m) n = add (mul m n) n [@@auto][@@rw];; 
+
+theorem mul_succ' m n = mul m (S n) = add (mul m n) m [@@auto][@@rw];; 
+
 
 theorem mul_comm m n = mul m n = mul n m 
  [@@induct m][@@permutative];; 
@@ -130,6 +134,8 @@ theorem lt_succ a b = lt a (S b) ==> le a b [@@auto][@@rw];;
 
 theorem lt_succ_2 a b = lt a b ==> lt (S a) b || S a = b [@@auto][@@rw];;
 
+theorem lt_succ_3 a b = a <> b ==> lt a (S b) ==> lt a b [@@auto][@@rw];;
+
 theorem le_trans a b c = le a b ==> le b c ==> le a c [@@auto];;
 
 
@@ -145,15 +151,43 @@ let rec quo a b =
   | Z,b -> Z 
   | S k, n -> add (quo k n) (sub (one) (if (S (rem k n) = n) then Z else one));;
 
+lemma rem_div_zero a = rem a Z = a [@@induct a][@@rw];;
 
-lemma rem_div_zero a = rem a Z = a [@@induct a];; 
+lemma rem_div_one a = rem a (S Z) = Z [@@induct a][@@rw];;
+
+lemma rem_421 a b = rem a b = Z && lt (S Z) b ==> rem (S a) b = (S Z)[@@auto];; 
+
+#max_induct 1;;
+(* lemma rem_strong_aux a b = rem a b = Z ==> rem (add b a) b = Z [@@auto];;  *)
+
+(* lemma rem_strong a b = rem (mul a b) a = Z [@@auto];; *)
+(* #max_induct 1;; *)
+(* lemma rem_acc a = rem a (S a) = a [@@auto];; *)
+
+(* #max_induct 1;;
+
+lemma rem_self a = rem a a = Z [@@auto];; 
+
+lemma rem_succ_l a = rem (S a) (a) = (S Z) [@@auto][@@apply (add_is_succ a)];; *)
+
+
+theorem rem_lt a b = lt Z b ==> lt (rem a b) b 
+[@@induct a][@@rw];;
+
+
+(* #max_induct 1;; *)
+(* theorem rem_lt_2 a b = rem (mul b a) b = Z [@@auto];; *)
+
+
+lemma quo_div_zero a = quo a Z = Z [@@induct a][@@rw];;
 
 theorem quo_rem_def a b = add (mul b (quo a b)) (rem a b) = a 
   [@@induct a][@@disable add_assoc', add_comm];;
 
+lemma rem_zero a b = rem a b = Z ==> (lt Z b) || (a = Z) [@@auto];;
 
 (* Funnily, these aren't necessary to prove the theorem! *)
-lemma rem_lt_aux a b = S (rem a b) = b ==> rem (S a) b = Z 
+(* lemma rem_lt_aux a b = S (rem a b) = b ==> rem (S a) b = Z 
   [@@auto][@@rw];;
 
 lemma rem_lt_aux_1 a b = S (rem a b) = b ==> lt Z b ==> lt (rem (S a) b) b 
@@ -166,13 +200,9 @@ lemma rem_lt_aux_3 a b = lt (rem a b) b [@trigger] ==> (lt (S (rem a b)) b || S(
   [@@apply lt_succ_2 (rem a b) b] [@@auto] [@@rw];; 
 
 lemma rem_lt_aux_4 p q r s t = (q ==> s || t) ==> (s ==> r) ==> (t ==> (p ==> r)) ==> (p ==> q) ==> (p ==> r)
- [@@auto];; 
+ [@@auto];;  *)
 
-#max_induct 2;;
-theorem rem_lt a b = lt Z b ==> lt (rem a b) b 
-[@@induct a];;
-
-(* [@@apply rem_lt_aux_4 (lt Z b) (lt (rem a b) b) (lt (rem (S a) b) b) (lt (S (rem a b)) b) (S(rem a b) = b)] *)
-(* [@@disable add_assoc', add_comm, mul_succ];; *)
-  (* [@@apply rem_lt_aux_3 (rem a b) b][@@induct a][@@disable add_comm] *)
+(* #max_induct 1;; *)
+(* theorem quo_rem_uniq a b c r =  *)
+(* (a = add (mul b c) r) && (lt r b) ==> ((r = rem a b)) [@@auto];; *)
 

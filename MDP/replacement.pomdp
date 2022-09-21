@@ -1,0 +1,25 @@
+discount: 0.75 
+values: cost 
+states: old new 
+actions: replace keep 
+observations: good bad 
+
+T: replace 
+0 1 
+0 1  
+
+T: keep 
+1 0 
+0.5 0.5 
+
+O: good 
+0.2 0.8
+0.1 0.9 
+
+# keeping the machine in any state costs 2
+R: keep : * 
+2 
+
+# replacing the machine in any state costs 15 
+R: replace 
+15

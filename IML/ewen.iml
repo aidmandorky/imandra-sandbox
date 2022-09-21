@@ -1,0 +1,24 @@
+type country =
+  | UK
+  | USA
+  | BRZ
+  | FRA
+
+type risk =  
+  | LOW 
+  | MED 
+  | HIGH 
+
+
+type transaction = {
+    qty   : int
+  ; provenance : country
+};;
+
+let is_trusted_rule (t:transaction):bool =
+  t.qty mod 2 = 0 && List.mem t.provenance [FRA;UK;USA];;
+
+let is_suspicious_rule (t:transaction):bool =
+  t.qty > 20000 && t.provenance = FRA;;
+
+instance (fun (x:transaction) -> is_trusted_rule x && is_suspicious_rule x)
